@@ -1,6 +1,5 @@
 package ru.practicum.client;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-@Slf4j
 public class StatClient {
 
     @Autowired
@@ -36,13 +34,10 @@ public class StatClient {
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<HitDto> entity = new HttpEntity<>(hitDto, headers);
             ResponseEntity<Void> response = restTemplate.postForEntity(serverUrl + "/hit", entity, Void.class);
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                log.info("Failed to save hit: " + response.getStatusCode());
-            }
+
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             String errorMessage = "Error saving hit: " + e.getMessage() + stacktrace;
-            log.info(errorMessage);
         }
     }
 
@@ -64,14 +59,12 @@ public class StatClient {
             ResponseEntity<List<StatDto>> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, null, new ParameterizedTypeReference<List<StatDto>>() {
             });
             if (!response.getStatusCode().is2xxSuccessful()) {
-                log.info("Failed to get stats: " + response.getStatusCode());
                 return Collections.emptyList();
             }
             return response.getBody();
         } catch (Exception e) {
             String stacktrace = ExceptionUtils.getStackTrace(e);
             String errorMessage = "Error getting stats: " + e.getMessage() + stacktrace;
-            log.info(errorMessage);
             return Collections.emptyList();
         }
     }
